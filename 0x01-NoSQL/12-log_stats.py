@@ -9,26 +9,30 @@ def log_stats():
     counts of different HTTPmethods, and the number of logs with method GET
     and path /status.
     """
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client.logs
-    nginx_collection = db.nginx
+    try:
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client.logs
+        nginx_collection = db.nginx
 
-    # Total number of logs
-    total_logs = nginx_collection.count_documents({})
-    print(f"{total_logs} logs")
+        # Total number of logs
+        total_logs = nginx_collection.count_documents({})
+        print(f"{total_logs} logs")
 
-    # Http methods statistics
-    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-    print("Methods:")
+        # Http methods statistics
+        methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+        print("Methods:")
 
-    for method in methods:
-        count = nginx_collection.count_documents({"method": method})
-        print(f" method {method}: {count}")
+        for method in methods:
+            count = nginx_collection.count_documents({"method": method})
+            print(f" method {method}: {count}")
 
-    # Number of documents with method=GET and path=/status
-    status_checks = nginx_collection.count_documents(
-            {"method": "GET", "path": "/status"})
-    print(f"{status_checks} status check")
+        # Number of documents with method=GET and path=/status
+        status_checks = nginx_collection.count_documents(
+                {"method": "GET", "path": "/status"})
+        print(f"{status_checks} status check")
+
+    except Exception as e:
+        print(f"An error occured: {e}")
 
 
 if __name__ == "__main__":
