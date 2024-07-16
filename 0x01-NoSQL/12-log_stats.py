@@ -3,6 +3,11 @@ import os
 import logging
 from pymongo import MongoClient
 
+"""
+A script that provides some stats about
+Nginx logs stored in MongoDB.
+"""
+
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)
 
