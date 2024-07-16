@@ -1,0 +1,5 @@
+// Connect to the database
+db = connect("127.0.0.1:27017/my_db");
+
+// Query to find documents where the name starts with "Holberton"
+db.school.find({name: /^Holberton/}).forEach(printjson);
