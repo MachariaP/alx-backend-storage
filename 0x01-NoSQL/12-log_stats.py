@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
+import os
+import logging
 from pymongo import MongoClient
+
+# Setup basic logging
+logging.basicConfig(level=logging.INFO)
 
 
 def log_stats():
@@ -10,29 +15,31 @@ def log_stats():
     and path /status.
     """
     try:
-        client = MongoClient('mongodb://localhost:27017/')
-        db = client.logs
-        nginx_collection = db.nginx
+        # MongoDB connection string from environment variable or default
+        mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017/')
+        client = MongoClient(mongo_url)
+        db = client['logs']
+        nginx_collection = db['nginx']
 
         # Total number of logs
         total_logs = nginx_collection.count_documents({})
-        print(f"{total_logs} logs")
+        logging.info(f"{total_logs} logs")
 
         # Http methods statistics
         methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-        print("Methods:")
+        logging.info("Methods:")
 
         for method in methods:
             count = nginx_collection.count_documents({"method": method})
-            print(f" method {method}: {count}")
+            logging.info(f"  method {method}: {count}")
 
         # Number of documents with method=GET and path=/status
         status_checks = nginx_collection.count_documents(
                 {"method": "GET", "path": "/status"})
-        print(f"{status_checks} status check")
+        logging.info(f"{status_checks} status check")
 
     except Exception as e:
-        print(f"An error occured: {e}")
+        logging.error(f"An error occured: {e}")
 
 
 if __name__ == "__main__":
