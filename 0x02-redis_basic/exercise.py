@@ -39,11 +39,7 @@ class Cache:
         self._redis.set(name=key, value=data)
         return key
 
-    """
-    Extends the Cache class to include methods for retrieving data from Redis and
-    converting it back to its original type. 
-    Implements get, get_str and get_int methods.
-    """
+
     def get(self, key: str, fn: Optional[callable] = None) -> Union[str, bytes, int, float, None]:
         
         """
