@@ -57,7 +57,7 @@ class Cache:
             The unique key as a string.
         """
         key = str(uuid.uuid4())
-        self._redis.set(name=key, value=data)
+        self._redis.set(key, data)
         return key
 
     def get(self, key: str, fn: Optional[callable] = None
