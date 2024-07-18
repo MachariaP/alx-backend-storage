@@ -114,8 +114,8 @@ class Cache:
         inputs_key = f"{method_name}:inputs"
         outputs_key = f"{method_name}:outputs"
 
-        inputs = instance._redis.lrange(input_key, 0, -1)
-        outputs = instance.redis.lrange(outputs_key, 0, -1)
+        inputs = instance._redis.lrange(inputs_key, 0, -1)
+        outputs = instance._redis.lrange(outputs_key, 0, -1)
 
         print(f"{method_name} was called {len(inputs)} times:")
         for input_str, output_str in zip(inputs, outputs):
