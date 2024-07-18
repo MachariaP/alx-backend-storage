@@ -36,18 +36,22 @@ def url_access_count(method):
     @wraps(method)
     def wrapper(url):
         """Cache results and count URL accesses."""
+        # Increment the count each time a URL is accessed
+        key_count = "count:" + url
+        current_count = r.incr(key_count)
+
+        # Check if the URL is already cached
         key = "cached:" + url
         cached_value = r.get(key)
         if cached_value:
+            # If cached, return the cached value
             return cached_value.decode("utf-8")
-
-        key_count = "count:" + url
-        html_content = method(url)
-
-        r.incr(key_count)
-        r.set(key, html_content, ex=10)
-        return html_content
-    return wrapper
+        else:
+            # If not cached, fetch the content and cache it
+            html_content = method(url)
+            r.set(key, html_content, ex=10)
+            return html_content
+        return wrapper
 
 
 @url_access_count
