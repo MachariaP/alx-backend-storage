@@ -6,7 +6,20 @@ with unique keys and retrieve it, suitable for caching and temporary data storag
 
 import redis
 import uuid
-from typing import Union, Optional
+import functools
+from typing import Union, Optional, Callable
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    A decorator that counts how many times a method is called.
+    """
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -25,6 +38,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Stores data in Redis under a unique key and returns the key.
