@@ -100,3 +100,19 @@ class Cache:
             The retrieved integer or None if key doesn't exist.
         """
         return self.get(key, fn=int)
+
+    def replay(method: Callable):
+        """
+        Display the history of calls of a particular function.
+        """
+        instance = method.__self__ # Get the instance (Cache) for the method
+        method_name = method.__qualname__
+        inputs_key = f"{method_name}:inputs"
+        outputs_key = f"{method_name}:outputs"
+
+        inputs = instance._redis.lrange(input_key, 0, -1)
+        outputs = instance.redis.lrange(outputs_key, 0, -1)
+
+        print(f"{method_name} was called {len(inputs)} times:")
+        for input_str, output_str in zip(inputs, outputs):
+            print(f"{method_name}{input_str.decode('utf-8')} -> {output_str.decode('utf-8')}")
