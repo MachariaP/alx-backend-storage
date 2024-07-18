@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Defins a Cache class for interfacing with Redis, providing methods to store data
-with unique keys and retrieve it, suitable for caching and temporary data storage.
+Defins a Cache class for interfacing with Redis, providing methods
+to store data with unique keys and retrieve it, suitable for
+caching and temporary data storage.
 """
 
 import redis
 import uuid
 import functools
 from typing import Union, Optional, Callable
+
 
 def call_history(method: Callable) -> Callable:
     """
@@ -36,7 +38,6 @@ class Cache:
         _redis (redis.Redis): An instance of the Redis client.
     """
 
-
     def __init__(self):
         """
         Initializes Redis client and clears any existing data.
@@ -59,17 +60,20 @@ class Cache:
         self._redis.set(name=key, value=data)
         return key
 
-
-    def get(self, key: str, fn: Optional[callable] = None) -> Union[str, bytes, int, float, None]:
+    def get(self, key: str, fn: Optional[callable] = None
+            ) -> Union[str, bytes, int, float, None]:
         """
-        Retrieves data from Redis by key and converts it using the provided function.
+        Retrieves data from Redis by key and
+        converts it using the provided function.
 
         Args:
             key: The key of the data to retrieve.
-            fn: An optional callable to convert the data back to its desired format.
+            fn: An optional callable to convert the data back to
+            its desired format.
 
         Returns:
-            The retrieved data, optionally converted using fn or None if key doesn't exist.
+            The retrieved data, optionally converted using fn or None
+            if key doesn't exist.
         """
         value = self._redis.get(name=key)
         if value is not None and fn is not None:
@@ -105,7 +109,7 @@ class Cache:
         """
         Display the history of calls of a particular function.
         """
-        instance = method.__self__ # Get the instance (Cache) for the method
+        instance = method.__self__   # Get the instance (Cache) for the method
         method_name = method.__qualname__
         inputs_key = f"{method_name}:inputs"
         outputs_key = f"{method_name}:outputs"
@@ -115,4 +119,5 @@ class Cache:
 
         print(f"{method_name} was called {len(inputs)} times:")
         for input_str, output_str in zip(inputs, outputs):
-            print(f"{method_name}{input_str.decode('utf-8')} -> {output_str.decode('utf-8')}")
+            print(f"{method_name}{input_str.decode
+                                  ('utf-8')} -> {output_str.decode('utf-8')}")
