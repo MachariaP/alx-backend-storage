@@ -38,11 +38,11 @@ class Cache:
         _redis (redis.Redis): An instance of the Redis client.
     """
 
-    def __init__(self):
+    def __init__(self, host='localhost', port=6379, db=0):
         """
         Initializes Redis client and clears any existing data.
         """
-        self._redis = redis.Redis()
+        self._redis = redis.Redis(host=host, port=port, db=db)
         self._redis.flushdb()
 
     @call_history
