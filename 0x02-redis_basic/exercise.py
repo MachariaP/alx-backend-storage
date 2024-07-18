@@ -61,7 +61,7 @@ class Cache:
         return key
 
     def get(self, key: str, fn: Optional[callable] = None
-            ) -> Union[str, bytes, int, float, None]:
+            ) -> Union[str, bytes, int, float]:
         """
         Retrieves data from Redis by key and
         converts it using the provided function.
@@ -75,12 +75,16 @@ class Cache:
             The retrieved data, optionally converted using fn or None
             if key doesn't exist.
         """
-        value = self._redis.get(name=key)
-        if value is not None and fn is not None:
-            return fn(value)
-        return value
+        data = self._redis.get(key)
+        if data is None:
+            return data
+        if fn:
+            callable_fn = fn(data)
+            return callable_fn
+        else:
+            return data
 
-    def get_str(self, key: str) -> Optional[str]:
+    def get_str(self, key: str) -> str:
         """
         Retrieves a string from Redis.
 
@@ -90,10 +94,10 @@ class Cache:
         Returns:
             The retrieved string or None if the key doesn't exist.
         """
-        value = self.get(key, fn=lambda x: x.decode('utf-8') if x else None)
+        value = self._redis.get(key, fn=lambda x: x.decode('utf-8'))
         return value
 
-    def get_int(self, key: str) -> Optional[int]:
+    def get_int(self, key: str) -> int:
         """
         Retrieves an integer from Redis.
 
@@ -103,7 +107,13 @@ class Cache:
         Returns:
             The retrieved integer or None if key doesn't exist.
         """
-        return self.get(key, fn=int)
+        value = self._redis.get(key)
+        try:
+            value = int(value.decode("utf-8"))
+        except Exception:
+            return None
+
+        return value
 
     def replay(method: Callable):
         """
@@ -119,5 +129,4 @@ class Cache:
 
         print(f"{method_name} was called {len(inputs)} times:")
         for input_str, output_str in zip(inputs, outputs):
-            print(f"{method_name}{input_str.decode
-                                  ('utf-8')} -> {output_str.decode('utf-8')}")
+            print(f"{method_name}{input_str.decode('utf-8')} -> {output_str.decode('utf-8')}")
