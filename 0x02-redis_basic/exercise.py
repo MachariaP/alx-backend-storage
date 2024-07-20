@@ -16,10 +16,13 @@ def count_calls(method: Callable) -> Callable:
     A decorator to store the history of inputs for a particular func.
     """
     @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        # Normalize and store input arguments
-        key = f"count:{method.__qualname__}"
-        self._redis.incr(key)
+    def wrapper(self, *args, **kwargs) -> Any:
+        """
+        Invokes the given method after incrementing its call counter.
+        """
+        if isinstance(self.redis, redis.Redis):
+            key = f"count:{method.__qualname__}"
+            self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
 
@@ -123,4 +126,6 @@ class Cache:
 
         print(f"{method_name} was called {len(inputs)} times:")
         for input_str, output_str in zip(inputs, outputs):
-            print(f"{method_name}{input_str.decode('utf-8')} -> {output_str.decode('utf-8')}")
+            input_decode = input_str.decode('utf-8')
+            output_decode = output_str.decode('utf-8')
+            print(f"{method_name} {input_decode} -> {output_decoded}")
