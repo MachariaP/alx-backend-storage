@@ -18,11 +18,10 @@ def count_calls(method: Callable) -> Callable:
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs) -> Any:
         """
-        Invokes the given method after incrementing its call counter.
+        Normalize and store input arguments
         """
-        if isinstance(self.redis, redis.Redis):
-            key = f"count:{method.__qualname__}"
-            self._redis.incr(key)
+        key = f"count:{method.__qualname__}"
+        self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
 
