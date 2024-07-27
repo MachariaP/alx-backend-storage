@@ -1,5 +1,4 @@
-// Connect to the database
-db = connect("127.0.0.1:27017/my_db");
+// This script lists all documents with a name starting with 'Holberton' in
+// the collection `school`
 
-// Query to find documents where the name starts with "Holberton"
-db.school.find({name: /^Holberton/}).forEach(printjson);
+db.school.find({ name: { $regex: '^Holberton' } });
